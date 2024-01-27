@@ -1,53 +1,137 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float velocidade = 5f;  // Velocidade de movimentação do personagem
-    public float forcaPulo = 10f;  // Força do pulo
-    public bool estaNoChao;
-    public DiminuirEscala configEscala;
-    private Rigidbody2D rb;
+    private float horizontal;
+    private float speed = 8f;
+    public float jumpingPower = 16f;
+    private bool isFacingRight = true;
 
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
+
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
+    public Animator clip;
 
     void Update()
     {
+        horizontal = Input.GetAxisRaw("Horizontal");
 
-                
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetButtonDown("Jump") && IsGrounded())
         {
-            configEscala.CongelarEscala();
+            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
         }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            configEscala.IniciarReiniciarEscala();
-        }
-        // Movimentação horizontal
-        float movimentoHorizontal = Input.GetAxis("Horizontal");
-        Vector2 movimento = new Vector2(movimentoHorizontal, 0);
-        transform.Translate(movimento * velocidade * Time.deltaTime);
 
-        // Pulo
-        if (Input.GetKeyDown(KeyCode.W) && estaNoChao)
+        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
         {
-            rb.AddForce(Vector2.up * forcaPulo, ForceMode2D.Impulse);
-            estaNoChao = false;
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+        }
+
+        Flip();
+        if (Mathf.Abs(horizontal) > 0.1f)
+        {
+            Debug.Log("A");
+            clip.SetBool("Run", true);
+        }
+        else
+        {
+            clip.SetBool("Run", false);
         }
         
     }
 
-
-    public void OnCollisionEnter2D(Collision2D col)
+    private void FixedUpdate()
     {
-        if (col.gameObject.tag == "Chao")
+        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+    }
+
+    private bool IsGrounded()
+    {
+        Collider[] colliders = new Collider[1];
+        int count = Physics.OverlapSphereNonAlloc(groundCheck.position, 0.2f, colliders, groundLayer);
+
+        return count > 0;
+    }
+
+
+    private void Flip()
+    {
+        if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
         {
-            estaNoChao = true;
+            isFacingRight = !isFacingRight;
+            Vector3 localScale = transform.localScale;
+            localScale.x *= -1f;
+            transform.localScale = localScale;
         }
     }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+       
+        if (other.gameObject.tag == "CheckPoint")
+        {
+            GameController.Instance.Check1 = true;
+        }
+        if (other.gameObject.tag == "CheckPoint1")
+        {
+            GameController.Instance.Check2 = true;
+        }
+        if (other.gameObject.tag == "CheckPoint2")
+        {
+            GameController.Instance.Check2 = true;
+        }
+        if (other.gameObject.tag == "CheckPoint3")
+        {
+            GameController.Instance.Check2 = true;
+        }
+
+    }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "SafeCheck")
+        {
+            GameController.Instance.SafeCheck1 = true;
+            
+        }
+        if (other.gameObject.tag == "SafeCheck1")
+        {
+            GameController.Instance.SafeCheck2 = true;
+            
+        }
+        if (other.gameObject.tag == "SafeCheck2")
+        {
+            GameController.Instance.SafeCheck3 = true;
+            
+        }
+        if (other.gameObject.tag == "SafeCheck3")
+        {
+            GameController.Instance.SafeCheck4 = true;
+            
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "SafeCheck")
+        {
+            GameController.Instance.SafeCheck1= false;
+
+        }
+        if (other.gameObject.tag == "SafeCheck1")
+        {
+            GameController.Instance.SafeCheck2= false;
+
+        }
+        if (other.gameObject.tag == "SafeCheck2")
+        {
+            GameController.Instance.SafeCheck3= false;
+
+        }
+        if (other.gameObject.tag == "SafeCheck3")
+        {
+            GameController.Instance.SafeCheck4= false;
+
+        }
+    }
+    
 }

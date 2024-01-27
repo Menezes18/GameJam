@@ -5,6 +5,14 @@ TagManager:
   serializedVersion: 2
   tags:
   - Chao
+  - CheckPoint
+  - SafeCheck
+  - SafeCheck1
+  - SafeCheck2
+  - SafeCheck3
+  - CheckPoint1
+  - CheckPoint2
+  - CheckPoint3
   layers:
   - Default
   - TransparentFX
