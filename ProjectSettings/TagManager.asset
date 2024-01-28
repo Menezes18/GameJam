@@ -15,6 +15,12 @@ TagManager:
   - CheckPoint3
   - PushableObject
   - Inicio
+  - Arrastavel
+  - Objeto
+  - Linha
+  - Cair
+  - Caindodochao
+  - Caixa
   layers:
   - Default
   - TransparentFX
