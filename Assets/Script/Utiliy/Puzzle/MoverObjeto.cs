@@ -58,11 +58,36 @@ public class MoverObjeto : MonoBehaviour
 
     public void Verifica()
     {
-        if (cubos[0].gameObject.name == tentativa[0].gameObject.name)
+       
+        if (tentativa.Count == cubos.Count)
         {
-            Debug.Log("Acertou");
+            bool sequenciaCorreta = true;
+
+            
+            for (int i = 0; i < tentativa.Count; i++)
+            {
+                if (cubos[i].gameObject.name != tentativa[i].gameObject.name)
+                {
+                    sequenciaCorreta = false;
+                    break; 
+                }
+            }
+
+            
+            if (sequenciaCorreta)
+            {
+                Debug.Log("Sequência Correta! Acertou");
+            }
+            else
+            {
+                Debug.Log("Sequência Incorreta! Tente novamente");
+                
+                
+                tentativa.Clear();
+            }
         }
     }
+
     void TrocarPosicoes(Transform objeto1, Transform objeto2)
     {
         Vector3 posicaoObjeto1 = objeto1.position;

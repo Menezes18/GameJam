@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private float horizontal;
+    public float horizontal;
     private float speed = 8f;
     public float jumpingPower = 16f;
     private bool isFacingRight = true;
@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
         if (Caindo)
         {
         horizontal = Input.GetAxisRaw("Horizontal");
+        
         }
 
         if (Input.GetKeyDown(KeyCode.Space)  && IsGrounded())
@@ -43,7 +44,7 @@ public class Player : MonoBehaviour
         Flip();
         if (Mathf.Abs(horizontal) > 0.1f)
         {
-            Debug.Log("A");
+            
             clip.SetBool("Run", true);
         }
         else
@@ -107,13 +108,15 @@ public class Player : MonoBehaviour
         }
         if (other.gameObject.tag == "Cair")
         {
+            Caindo = false;
             clip.SetBool("Cair",true);
         }
         if (other.gameObject.tag == "Caindodochao")
         {
             Caindo = false;
             clip.SetBool("Cair",false);
-            Invoke("VoltandoAoNormal", 1f);
+            horizontal = 0f;
+            Invoke("VoltandoAoNormal", 5f);
         }
         if (other.gameObject.tag == "CheckPoint")
         {

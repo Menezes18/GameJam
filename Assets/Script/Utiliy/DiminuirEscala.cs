@@ -8,7 +8,7 @@ public class DiminuirEscala : MonoBehaviour
     public Vector3 inicioShader = new Vector3(11.82644f, 7.547668f, 11.82644f);
     public Vector3 escalaFinal = new Vector3(0.003f, 0.002f, 0.003f); // Ajuste essa escala conforme necessário
     public Vector3 Atual;
-    private float tempoParaDiminuir = 30f; // Tempo (em segundos)
+    private float tempoParaDiminuir = 25f; // Tempo (em segundos)
     private float tempoPassado;
     public bool diminuir = false;
     public bool reiniciar = false;
@@ -81,6 +81,11 @@ public class DiminuirEscala : MonoBehaviour
         reiniciar = true;
         tempoPassado = 0f;
     }
+
+    public void final()
+    {
+        transform.localScale = new Vector3(10f, 6f, 10f);
+    }
     void DiminuirObjetoGradualmenteInicio()
     {
         tempoPassado += Time.deltaTime;
@@ -96,6 +101,10 @@ public class DiminuirEscala : MonoBehaviour
             // Reinicia o tempo passado para futuras chamadas
             tempoPassado = 0f;
             IniicoShader = false;
+            if (transform.localScale == escalaFinal)
+            {
+                GameController.Instance.Reiniciar();
+            }
         }
     }
     void DiminuirObjetoGradualmente()
