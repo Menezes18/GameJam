@@ -1,35 +1,49 @@
+using System;
 using UnityEngine;
 
 public class DiminuirEscala : MonoBehaviour
 {
+    public static DiminuirEscala instancia;
+    public Vector3 escalaInicial = new Vector3(2.983649f, 1.904173f, 2.983649f);
+    public Vector3 inicioShader = new Vector3(11.82644f, 7.547668f, 11.82644f);
     public Vector3 escalaFinal = new Vector3(0.003f, 0.002f, 0.003f); // Ajuste essa escala conforme necessário
-    public float tempoParaDiminuir = 10f; // Tempo (em segundos) para atingir a escala final
-    private float tempoPassado = 0f;
-    private bool diminuir = false;
-    private bool reiniciar = false;
+    public Vector3 Atual;
+    private float tempoParaDiminuir = 20f; // Tempo (em segundos)
+    private float tempoPassado;
+    public bool diminuir = false;
+    public bool reiniciar = false;
+    public bool IniicoShader = false;
+
+    public void Awake()
+    {
+        instancia = this;
+        tempoPassado = 0f;
+        diminuir = false;
+        reiniciar = false;
+       // escalaInicial = transform.localScale;
+        
+    }
+
+    public void ativarShader()
+    {
+        IniicoShader = true;
+    }
+    public void Start()
+    {
+        transform.localScale = new Vector3(10.14f, 6.4f, 10.14f);
+        IniicoShader = false;
+    }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K)) // Você pode alterar a tecla conforme necessário
+        if (Input.GetKeyDown(KeyCode.K) )
         {
-            diminuir = true;
-            reiniciar = false;
-            tempoPassado = 0f;
+            Diminuir();
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) )
         {
-            if (diminuir)
-            {
-                diminuir = false;
-                reiniciar = true;
-                tempoPassado = 0f;
-            }
-            else
-            {
-                reiniciar = false;
-                AumentarObjetoGradualmente();
-            }
+            ReiniciarV();
         }
 
         if (diminuir)
@@ -41,18 +55,51 @@ public class DiminuirEscala : MonoBehaviour
         {
             AumentarObjetoGradualmente();
         }
-        
+
+        if (IniicoShader)
+        {
+            DiminuirObjetoGradualmenteInicio();
+        }
     }
 
-    void FixedUpdate()
+    public void InicioDiminuir()
     {
-        // Se você não estiver usando FixedUpdate para nada específico, remova esta função
+        diminuir = true;
+        reiniciar = false;
+        tempoPassado = 0f;
+    }
+    public void Diminuir()
+    {
+        diminuir = true;
+        reiniciar = false;
+        tempoPassado = 0f;
     }
 
+    public void ReiniciarV()
+    {
+        diminuir = false;
+        reiniciar = true;
+        tempoPassado = 0f;
+    }
+    void DiminuirObjetoGradualmenteInicio()
+    {
+        tempoPassado += Time.deltaTime;
+
+        // Interpola linearmente entre a escala inicial e final ao longo do tempo
+        transform.localScale = Vector3.Lerp(inicioShader, escalaFinal, tempoPassado / tempoParaDiminuir);
+
+        // Garante que a escala final seja exatamente a desejada
+        if (tempoPassado >= tempoParaDiminuir)
+        {
+            transform.localScale = escalaFinal;
+
+            // Reinicia o tempo passado para futuras chamadas
+            tempoPassado = 0f;
+            IniicoShader = false;
+        }
+    }
     void DiminuirObjetoGradualmente()
     {
-        Vector3 escalaInicial = transform.localScale;
-
         tempoPassado += Time.deltaTime;
 
         // Interpola linearmente entre a escala inicial e final ao longo do tempo
@@ -71,21 +118,15 @@ public class DiminuirEscala : MonoBehaviour
 
     public void AumentarObjetoGradualmente()
     {
-        Vector3 escalaAtual = transform.localScale;
-        
+        tempoPassado += Time.deltaTime;
+        Atual = transform.localScale;
+        // Interpola linearmente entre a escala atual e a escala original ao longo do tempo
+        transform.localScale = Vector3.Lerp(Atual, escalaInicial, tempoPassado / tempoParaDiminuir);
 
-        if (tempoPassado < tempoParaDiminuir)
+        // Garante que a escala final seja exatamente a desejada
+        if (tempoPassado >= tempoParaDiminuir)
         {
-            tempoPassado += Time.deltaTime;
-
-            // Interpola linearmente entre a escala atual e a escala original ao longo do tempo
-            var PrimeiraEscala = new Vector3(2.983649f, 1.904173f, 2.983649f);
-            transform.localScale = Vector3.Lerp(escalaAtual, PrimeiraEscala, tempoPassado / tempoParaDiminuir);
-        }
-        else
-        {
-            // Garante que a escala final seja exatamente a desejada
-            transform.localScale = new Vector3(2.983649f, 1.904173f, 2.983649f);
+            transform.localScale = escalaInicial;
 
             // Reinicia o tempo passado para futuras chamadas
             tempoPassado = 0f;

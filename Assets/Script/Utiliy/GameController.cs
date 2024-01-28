@@ -34,6 +34,12 @@ public class GameController : MonoBehaviour
             return instance;
         }
     }
+
+    public void ReiniciarShader()
+    {
+        DiminuirEscala.instancia.reiniciar = true;
+    }
+    
     
     
 
